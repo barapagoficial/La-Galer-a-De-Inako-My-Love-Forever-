@@ -207,6 +207,18 @@ document.addEventListener('keydown', event => {
   if (event.key === 'ArrowLeft') moveLightbox(-1);
   if (event.key === 'ArrowRight') moveLightbox(1);
 });
+// Deslizar el dedo para cambiar de foto en móvil.
+let touchStartX = 0;
+let touchStartY = 0;
+lightbox.addEventListener('touchstart', event => {
+  touchStartX = event.changedTouches[0].clientX;
+  touchStartY = event.changedTouches[0].clientY;
+}, { passive: true });
+lightbox.addEventListener('touchend', event => {
+  const dx = event.changedTouches[0].clientX - touchStartX;
+  const dy = event.changedTouches[0].clientY - touchStartY;
+  if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) moveLightbox(dx < 0 ? 1 : -1);
+}, { passive: true });
 
 /* ── Reveal genérico al hacer scroll ── */
 const revealObserver = new IntersectionObserver(entries => {
