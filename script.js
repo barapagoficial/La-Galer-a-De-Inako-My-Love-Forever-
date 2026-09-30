@@ -29,7 +29,7 @@ const cleanName = (photo) => {
 };
 
 function getCollection(path = '') {
-  const parts = path.split('/').filter(Boolean);
+  const parts = path.split('/').filter(Boolean).map(part => decodeURIComponent(part));
   // Manifest: fotos/subcarpeta/archivo. Local folder: carpeta/subcarpeta/archivo.
   return parts.length > 2 ? parts[parts.length - 2] : 'Principal';
 }
@@ -168,6 +168,7 @@ function openLightbox(index) {
   activeIndex = index;
   updateLightbox();
   lightbox.showModal();
+  document.body.classList.add('lightbox-open');
   document.body.style.overflow = 'hidden';
 }
 function updateLightbox() {
@@ -189,12 +190,18 @@ function moveLightbox(direction) {
 }
 function closeLightbox() {
   lightbox.close();
+  document.body.classList.remove('lightbox-open');
   document.body.style.overflow = '';
 }
 document.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
 document.querySelector('.lightbox-arrow.prev').addEventListener('click', () => moveLightbox(-1));
 document.querySelector('.lightbox-arrow.next').addEventListener('click', () => moveLightbox(1));
 lightbox.addEventListener('click', event => { if (event.target === lightbox) closeLightbox(); });
+// Esc cierra el diálogo de forma nativa; sincronizamos también el cursor y el scroll.
+lightbox.addEventListener('close', () => {
+  document.body.classList.remove('lightbox-open');
+  document.body.style.overflow = '';
+});
 document.addEventListener('keydown', event => {
   if (!lightbox.open) return;
   if (event.key === 'ArrowLeft') moveLightbox(-1);

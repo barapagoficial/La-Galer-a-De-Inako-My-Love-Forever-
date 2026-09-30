@@ -1,0 +1,32 @@
+name: Actualizar catálogo de fotos
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'fotos/**'
+      - 'tools/generar-galeria.mjs'
+      - 'package.json'
+
+permissions:
+  contents: write
+
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Regenerar catálogo
+        run: npm run galeria
+      - name: Guardar fotos.json si cambió
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add fotos.json
+          git diff --cached --quiet || git commit -m 'chore: actualizar catálogo de fotos'
+          git push
