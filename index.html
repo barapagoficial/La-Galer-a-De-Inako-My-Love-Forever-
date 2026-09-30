@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050505" />
+  <meta name="description" content="La Galería de Inako — un archivo visual creado con amor." />
+  <title>La Galería de Inako — My Love Forever</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Italiana&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+</head>
+<body>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+
+  <header class="nav" id="inicio">
+    <a class="brand" href="#inicio" aria-label="Ir al inicio">
+      <span class="brand-mark">I</span>
+      <span>INAKO</span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <a href="#galeria">Galería</a>
+      <a href="#acerca">Acerca de</a>
+    </nav>
+    <button class="sound-button" id="motionToggle" type="button" aria-pressed="false" title="Pausar animaciones">
+      <span></span><span></span><span></span><span></span>
+      <span class="sr-only">Pausar animaciones</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="eyebrow reveal">Archivo visual <span></span> 2026</p>
+      <div class="hero-title-wrap">
+        <h1 id="hero-title">
+          <span class="title-line reveal">La Galería</span>
+          <span class="title-line title-offset reveal">de <em>Inako</em></span>
+        </h1>
+        <p class="hero-note reveal">MY LOVE<br />FOREVER <i>♥</i></p>
+      </div>
+      <div class="hero-bottom reveal">
+        <p>Un rincón dedicado a cada instante,<br />cada mirada y cada recuerdo.</p>
+        <a class="scroll-link" href="#galeria">
+          <span>Descubrir</span>
+          <span class="scroll-circle">↓</span>
+        </a>
+      </div>
+      <div class="orb orb-one" aria-hidden="true"></div>
+      <div class="orb orb-two" aria-hidden="true"></div>
+      <p class="watermark" aria-hidden="true">FOREVER</p>
+    </section>
+
+    <section class="gallery-section" id="galeria" aria-labelledby="gallery-title">
+      <div class="section-heading reveal">
+        <div>
+          <p class="eyebrow">Colección <span></span> completa</p>
+          <h2 id="gallery-title">Todos sus<br /><em>momentos.</em></h2>
+        </div>
+        <div class="gallery-meta">
+          <span id="photoCount">00 fotografías</span>
+          <p>Una colección que crece<br />con cada nuevo recuerdo.</p>
+        </div>
+      </div>
+
+      <div class="gallery-tools reveal" id="galleryTools" hidden>
+        <div class="collection-filters" id="collectionFilters" aria-label="Filtrar por colección"></div>
+        <button class="layout-button" id="layoutButton" type="button" aria-pressed="false">
+          <span class="layout-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span id="layoutLabel">Vista compacta</span>
+        </button>
+      </div>
+
+      <div class="gallery" id="gallery" aria-live="polite"></div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="empty-symbol">✦</div>
+        <p class="eyebrow">La colección te espera</p>
+        <h3>Añade las fotos<br />de <em>Inako.</em></h3>
+        <p>Copia tus imágenes dentro de la carpeta <code>fotos</code> y ejecuta <code>npm run galeria</code>, o elige una carpeta para verlas ahora.</p>
+        <label class="folder-button">
+          <input id="folderInput" type="file" accept="image/*" webkitdirectory directory multiple />
+          <span>Elegir carpeta</span><b>↗</b>
+        </label>
+      </div>
+
+      <div class="add-more reveal" id="addMore" hidden>
+        <span>¿Más recuerdos?</span>
+        <label class="text-button">
+          <input id="moreInput" type="file" accept="image/*" webkitdirectory directory multiple />
+          Abrir otra carpeta ↗
+        </label>
+      </div>
+    </section>
+
+    <section class="manifesto" id="acerca" aria-labelledby="manifesto-title">
+      <p class="eyebrow reveal">My love forever <span></span> ∞</p>
+      <h2 id="manifesto-title" class="reveal">Hay personas que se<br />convierten en <em>arte.</em></h2>
+      <div class="manifesto-grid reveal">
+        <span class="signature">♥</span>
+        <p>Esta galería es una carta sin final. Un lugar donde el tiempo se detiene y cada fotografía cuenta una pequeña parte de una historia infinita.</p>
+        <p class="roman">MMXXVI — ∞</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand" href="#inicio"><span class="brand-mark">I</span><span>INAKO</span></a>
+    <p>HECHO CON <span>♥</span> PARA INAKO</p>
+    <a href="#inicio">Volver arriba ↑</a>
+  </footer>
+
+  <dialog class="lightbox" id="lightbox">
+    <button class="lightbox-close" type="button" aria-label="Cerrar">×</button>
+    <button class="lightbox-arrow prev" type="button" aria-label="Foto anterior">←</button>
+    <figure>
+      <img id="lightboxImage" alt="" />
+      <figcaption><span id="lightboxCaption"></span><span id="lightboxIndex"></span></figcaption>
+    </figure>
+    <button class="lightbox-arrow next" type="button" aria-label="Foto siguiente">→</button>
+  </dialog>
+
+  <script src="script.js?v=2"></script>
+</body>
+</html>
