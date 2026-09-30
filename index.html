@@ -9,12 +9,22 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Italiana&family=Pixelify+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body>
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="pre-inner">
+      <div class="pre-heart px-heart"></div>
+      <p class="pre-text">Cargando recuerdos<span class="pre-caret">█</span></p>
+      <div class="pre-bar"><span></span></div>
+      <p class="pre-sub">La Galería de Inako — MMXXVI</p>
+    </div>
+  </div>
+
   <canvas id="stars" aria-hidden="true"></canvas>
   <div class="noise" aria-hidden="true"></div>
-  <div class="cursor" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><span class="cursor-label"></span></div>
   <div class="cursor-dot" aria-hidden="true"></div>
 
   <header class="nav" id="inicio">
@@ -37,8 +47,8 @@
       <p class="eyebrow reveal">Archivo visual <span></span> 2026</p>
       <div class="hero-title-wrap">
         <h1 id="hero-title">
-          <span class="title-line reveal">La Galería</span>
-          <span class="title-line title-offset reveal">de <em>Inako</em></span>
+          <span class="title-line">La Galería</span>
+          <span class="title-line title-offset">de <em class="shimmer">Inako</em></span>
         </h1>
         <p class="hero-note reveal">MY LOVE<br />FOREVER <i>♥</i></p>
       </div>
@@ -51,8 +61,22 @@
       </div>
       <div class="orb orb-one" aria-hidden="true"></div>
       <div class="orb orb-two" aria-hidden="true"></div>
+      <span class="float-heart px-heart f1" aria-hidden="true"></span>
+      <span class="float-heart px-heart f2" aria-hidden="true"></span>
+      <span class="float-heart px-heart f3" aria-hidden="true"></span>
       <p class="watermark" aria-hidden="true">FOREVER</p>
     </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <div class="marquee-group">
+          <span>La Galería de Inako</span><i class="px-heart"></i><span>My love forever</span><i class="diamond">✦</i><span>Siempre tú</span><i class="px-heart dim"></i><span>MMXXVI</span><i class="diamond">✦</i><span>Hecho con amor</span><i class="px-heart"></i>
+        </div>
+        <div class="marquee-group">
+          <span>La Galería de Inako</span><i class="px-heart"></i><span>My love forever</span><i class="diamond">✦</i><span>Siempre tú</span><i class="px-heart dim"></i><span>MMXXVI</span><i class="diamond">✦</i><span>Hecho con amor</span><i class="px-heart"></i>
+        </div>
+      </div>
+    </div>
 
     <section class="gallery-section" id="galeria" aria-labelledby="gallery-title">
       <div class="section-heading reveal">
@@ -77,7 +101,7 @@
       <div class="gallery" id="gallery" aria-live="polite"></div>
 
       <div class="empty-state" id="emptyState" hidden>
-        <div class="empty-symbol">✦</div>
+        <div class="empty-heart px-heart" aria-hidden="true"></div>
         <p class="eyebrow">La colección te espera</p>
         <h3>Añade las fotos<br />de <em>Inako.</em></h3>
         <p>Copia tus imágenes dentro de la carpeta <code>fotos</code> y ejecuta <code>npm run galeria</code>, o elige una carpeta para verlas ahora.</p>
@@ -98,7 +122,7 @@
 
     <section class="manifesto" id="acerca" aria-labelledby="manifesto-title">
       <p class="eyebrow reveal">My love forever <span></span> ∞</p>
-      <h2 id="manifesto-title" class="reveal">Hay personas que se<br />convierten en <em>arte.</em></h2>
+      <h2 id="manifesto-title" class="reveal">Hay personas que se<br />convierten en <em class="shimmer">arte.</em></h2>
       <div class="manifesto-grid reveal">
         <span class="signature">♥</span>
         <p>Esta galería es una carta sin final. Un lugar donde el tiempo se detiene y cada fotografía cuenta una pequeña parte de una historia infinita.</p>
@@ -109,7 +133,7 @@
 
   <footer>
     <a class="brand" href="#inicio"><span class="brand-mark">I</span><span>INAKO</span></a>
-    <p>HECHO CON <span>♥</span> PARA INAKO</p>
+    <p>HECHO CON <span class="heartbeat">♥</span> PARA INAKO</p>
     <a href="#inicio">Volver arriba ↑</a>
   </footer>
 
@@ -123,6 +147,6 @@
     <button class="lightbox-arrow next" type="button" aria-label="Foto siguiente">→</button>
   </dialog>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
