@@ -13,6 +13,10 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; color: var(--paper); background: var(--ink); font-family: var(--sans); cursor: none; overflow-x: hidden; }
 a, button, label { cursor: none; }
+/* El diálogo vive en el top layer: el cursor personalizado del documento queda detrás. */
+body.lightbox-open, body.lightbox-open a, body.lightbox-open button, body.lightbox-open label { cursor: auto; }
+.lightbox-open .cursor, .lightbox-open .cursor-dot { display: none; }
+.lightbox button { cursor: pointer; }
 ::selection { color: #080808; background: #f2eee3; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
 main section[id] { scroll-margin-top: 80px; }
@@ -330,7 +334,9 @@ footer .heartbeat { display: inline-block; animation: beat 1.8s ease-in-out infi
   .gallery-card img { min-height: 320px; }
   .gallery.compact .gallery-card img { min-height: 190px; }
   .manifesto { min-height: 78vh; }
-  .lightbox[open] { grid-template-columns: 0 1fr 0; }
+  .lightbox[open] { grid-template-columns: 0 1fr 0; padding: 7vh 3vw 12vh; }
+  .lightbox figure { height: 80vh; }
+  .lightbox img { max-width: 94vw; max-height: calc(80vh - 55px); }
   .lightbox-arrow { position: fixed; bottom: 3vh; z-index: 2; }
   .lightbox-arrow.prev { left: 30vw; }
   .lightbox-arrow.next { right: 30vw; }

@@ -20,7 +20,7 @@ async function walk(dir) {
 }
 
 const files = (await walk(photosDir))
-  .map(file => relative(root, file).split('\\').join('/'))
+  .map(file => relative(root, file).split('\\').join('/').split('/').map(encodeURIComponent).join('/'))
   .sort((a, b) => a.localeCompare(b, 'es', { numeric: true }));
 
 await writeFile(join(root, 'fotos.json'), JSON.stringify(files, null, 2) + '\n');
