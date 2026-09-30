@@ -1,0 +1,8 @@
+{
+  "name": "la-galeria-de-inako",
+  "private": true,
+  "scripts": {
+    "galeria": "node tools/generar-galeria.mjs",
+    "serve": "python3 tools/servidor.py"
+  }
+}
