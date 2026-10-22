@@ -91,11 +91,29 @@
       </div>
 
       <div class="gallery-tools reveal" id="galleryTools" hidden>
+        <div class="gallery-tools-top">
+          <div class="search-box">
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <input type="search" id="searchInput" placeholder="Buscar por título o archivo..." aria-label="Buscar fotografías" />
+            <button type="button" id="searchClear" aria-label="Limpiar búsqueda" hidden>×</button>
+          </div>
+          <div class="tools-actions">
+            <div class="sort-box">
+              <label for="sortSelect" class="sr-only">Ordenar fotografías</label>
+              <select id="sortSelect" aria-label="Ordenar por">
+                <option value="default">Orden original</option>
+                <option value="name-asc">Nombre (A-Z)</option>
+                <option value="name-desc">Nombre (Z-A)</option>
+                <option value="random">Aleatorio</option>
+              </select>
+            </div>
+            <button class="layout-button" id="layoutButton" type="button" aria-pressed="false">
+              <span class="layout-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+              <span id="layoutLabel">Vista compacta</span>
+            </button>
+          </div>
+        </div>
         <div class="collection-filters" id="collectionFilters" aria-label="Filtrar por colección"></div>
-        <button class="layout-button" id="layoutButton" type="button" aria-pressed="false">
-          <span class="layout-icon" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-          <span id="layoutLabel">Vista compacta</span>
-        </button>
       </div>
 
       <div class="gallery" id="gallery" aria-live="polite"></div>
@@ -138,9 +156,20 @@
   </footer>
 
   <dialog class="lightbox" id="lightbox">
-    <button class="lightbox-close" type="button" aria-label="Cerrar">×</button>
+    <div class="lightbox-toolbar">
+      <button class="lightbox-btn" id="lightboxFav" type="button" aria-label="Marcar como favorita" title="Marcar como favorita">
+        <span class="px-heart"></span>
+      </button>
+      <button class="lightbox-btn" id="lightboxZoom" type="button" aria-label="Ampliar imagen" title="Ampliar imagen">
+        <span class="btn-icon">⤢</span>
+      </button>
+      <a class="lightbox-btn" id="lightboxDownload" href="#" download aria-label="Descargar foto" title="Descargar foto">
+        <span class="btn-icon">⤓</span>
+      </a>
+      <button class="lightbox-close" type="button" aria-label="Cerrar">×</button>
+    </div>
     <button class="lightbox-arrow prev" type="button" aria-label="Foto anterior">←</button>
-    <figure>
+    <figure id="lightboxFigure">
       <img id="lightboxImage" alt="" />
       <figcaption><span id="lightboxCaption"></span><span id="lightboxIndex"></span></figcaption>
     </figure>

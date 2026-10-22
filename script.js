@@ -5,10 +5,17 @@ const addMore = document.querySelector('#addMore');
 const galleryTools = document.querySelector('#galleryTools');
 const collectionFilters = document.querySelector('#collectionFilters');
 const layoutButton = document.querySelector('#layoutButton');
+const searchInput = document.querySelector('#searchInput');
+const searchClear = document.querySelector('#searchClear');
+const sortSelect = document.querySelector('#sortSelect');
 const lightbox = document.querySelector('#lightbox');
 const lightboxImage = document.querySelector('#lightboxImage');
 const lightboxCaption = document.querySelector('#lightboxCaption');
 const lightboxIndex = document.querySelector('#lightboxIndex');
+const lightboxFav = document.querySelector('#lightboxFav');
+const lightboxZoom = document.querySelector('#lightboxZoom');
+const lightboxDownload = document.querySelector('#lightboxDownload');
+const lightboxFigure = document.querySelector('#lightboxFigure');
 const preloader = document.querySelector('#preloader');
 const progressBar = document.querySelector('#scrollProgress');
 const nav = document.querySelector('.nav');
@@ -22,6 +29,31 @@ let allPhotos = [];
 let photos = [];
 let activeIndex = 0;
 let activeCollection = 'Todas';
+let searchQuery = '';
+let currentSort = 'default';
+let favorites = new Set(JSON.parse(localStorage.getItem('inako_favs') || '[]'));
+
+function saveFavorites() {
+  localStorage.setItem('inako_favs', JSON.stringify([...favorites]));
+}
+
+/* ── Corazones pixel que nacen al hacer clic ── */
+let flyingHearts = 0;
+function spawnHeart(x, y, bigBoost = false) {
+  if (reduceMotion || flyingHearts > 16) return;
+  const heart = document.createElement('span');
+  heart.className = 'px-heart click-heart';
+  heart.style.left = `${x}px`;
+  heart.style.top = `${y}px`;
+  heart.style.setProperty('--s', `${13 + Math.random() * 11}px`);
+  heart.style.setProperty('--dx', `${Math.random() * 70 - 35}px`);
+  heart.style.setProperty('--rot', `${Math.random() * 30 - 15}deg`);
+  heart.style.setProperty('--c', ['#f0eee9', '#dcd8cc', '#ffffff'][Math.floor(Math.random() * 3)]);
+  document.body.append(heart);
+  flyingHearts++;
+  heart.addEventListener('animationend', () => { heart.remove(); flyingHearts--; });
+  if (bigBoost) heart.style.setProperty('--s', '26px');
+}
 
 const cleanName = (photo) => {
   const file = decodeURIComponent(photo.name || photo.path?.split('/').pop() || 'Inako');
@@ -52,7 +84,7 @@ function updateCounter() {
 
 function createCard(photo, index) {
   const article = document.createElement('article');
-  article.className = 'gallery-card';
+  article.className = 'gallery-card skeleton-loading';
   // Entrada escalonada: cada tarjeta aparece un poco después de la anterior
   article.style.transitionDelay = `${(index % 6) * 55}ms`;
   const button = document.createElement('button');
@@ -64,13 +96,37 @@ function createCard(photo, index) {
   image.alt = `Inako — ${cleanName(photo)}`;
   image.loading = index < 6 ? 'eager' : 'lazy';
   image.decoding = 'async';
+  image.onload = () => article.classList.remove('skeleton-loading');
   image.onerror = () => article.remove();
+
+  const isFav = favorites.has(photo.path || photo.src);
+  const favBadge = document.createElement('button');
+  favBadge.type = 'button';
+  favBadge.className = `card-fav-btn${isFav ? ' active' : ''}`;
+  favBadge.setAttribute('aria-label', isFav ? 'Quitar de favoritas' : 'Añadir a favoritas');
+  favBadge.innerHTML = `<span class="px-heart"></span>`;
+  favBadge.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const photoId = photo.path || photo.src;
+    if (favorites.has(photoId)) {
+      favorites.delete(photoId);
+      favBadge.classList.remove('active');
+    } else {
+      favorites.add(photoId);
+      favBadge.classList.add('active');
+      spawnHeart(e.clientX, e.clientY);
+    }
+    saveFavorites();
+    buildFilters();
+    if (activeCollection === 'Favoritas') renderGallery();
+  });
+
   const stamp = document.createElement('span');
   stamp.className = 'card-stamp px-heart';
   const overlay = document.createElement('span');
   overlay.className = 'card-overlay';
-  overlay.innerHTML = `<span>${String(index + 1).padStart(2, '0')} · Inako</span><b>↗</b>`;
-  button.append(image, stamp, overlay);
+  overlay.innerHTML = `<span>${String(index + 1).padStart(2, '0')} · ${cleanName(photo)}</span><b>↗</b>`;
+  button.append(image, favBadge, stamp, overlay);
   button.addEventListener('click', () => openLightbox(index));
   article.append(button);
   gallery.append(article);
@@ -78,9 +134,35 @@ function createCard(photo, index) {
 }
 
 function renderGallery() {
-  photos = activeCollection === 'Todas'
-    ? [...allPhotos]
-    : allPhotos.filter(photo => photo.collection === activeCollection);
+  // Filter by collection
+  if (activeCollection === 'Favoritas') {
+    photos = allPhotos.filter(photo => favorites.has(photo.path || photo.src));
+  } else if (activeCollection === 'Todas') {
+    photos = [...allPhotos];
+  } else {
+    photos = allPhotos.filter(photo => photo.collection === activeCollection);
+  }
+
+  // Filter by search query
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    photos = photos.filter(photo => cleanName(photo).toLowerCase().includes(q) || (photo.collection && photo.collection.toLowerCase().includes(q)));
+  }
+
+  // Sort photos
+  if (currentSort === 'name-asc') {
+    photos.sort((a, b) => cleanName(a).localeCompare(cleanName(b), 'es', { numeric: true }));
+  } else if (currentSort === 'name-desc') {
+    photos.sort((a, b) => cleanName(b).localeCompare(cleanName(a), 'es', { numeric: true }));
+  } else if (currentSort === 'random') {
+    // Fisher-Yates shuffle for true random order
+    photos = [...photos];
+    for (let i = photos.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [photos[i], photos[j]] = [photos[j], photos[i]];
+    }
+  }
+
   gallery.replaceChildren();
   photos.forEach(createCard);
   emptyState.hidden = allPhotos.length > 0;
@@ -90,16 +172,18 @@ function renderGallery() {
 }
 
 function buildFilters() {
-  const collections = ['Todas', ...new Set(allPhotos.map(photo => photo.collection))];
+  const collections = ['Todas', 'Favoritas', ...new Set(allPhotos.map(photo => photo.collection))];
   collectionFilters.replaceChildren();
   collections.forEach(collection => {
-    const count = collection === 'Todas'
-      ? allPhotos.length
-      : allPhotos.filter(photo => photo.collection === collection).length;
+    let count = 0;
+    if (collection === 'Todas') count = allPhotos.length;
+    else if (collection === 'Favoritas') count = favorites.size;
+    else count = allPhotos.filter(photo => photo.collection === collection).length;
+
     const button = document.createElement('button');
     button.type = 'button';
     button.className = `filter-button${collection === activeCollection ? ' active' : ''}`;
-    button.append(collection);
+    button.append(collection === 'Favoritas' ? '♥ Favoritas' : collection);
     const badge = document.createElement('span');
     badge.className = 'count';
     badge.textContent = count;
@@ -163,6 +247,25 @@ layoutButton.addEventListener('click', () => {
   document.querySelector('#layoutLabel').textContent = compact ? 'Vista amplia' : 'Vista compacta';
 });
 
+searchInput?.addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim();
+  searchClear.hidden = searchQuery.length === 0;
+  renderGallery();
+});
+
+searchClear?.addEventListener('click', () => {
+  searchInput.value = '';
+  searchQuery = '';
+  searchClear.hidden = true;
+  searchInput.focus();
+  renderGallery();
+});
+
+sortSelect?.addEventListener('change', (e) => {
+  currentSort = e.target.value;
+  renderGallery();
+});
+
 /* ── Lightbox ── */
 function openLightbox(index) {
   activeIndex = index;
@@ -178,12 +281,40 @@ function updateLightbox() {
   lightboxImage.alt = `Inako — ${cleanName(photo)}`;
   lightboxCaption.textContent = `${photo.collection} · ${cleanName(photo)}`;
   lightboxIndex.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(photos.length).padStart(2, '0')}`;
+
+  const photoId = photo.path || photo.src;
+  const isFav = favorites.has(photoId);
+  lightboxFav?.classList.toggle('active', isFav);
+  if (lightboxDownload) {
+    lightboxDownload.href = photo.src || photo.path;
+    lightboxDownload.download = `${cleanName(photo)}.jpg`;
+  }
+
   // Transición suave al cambiar de foto dentro del visor
-  const figure = lightbox.querySelector('figure');
-  figure.classList.remove('swap');
-  void figure.offsetWidth;
-  figure.classList.add('swap');
+  lightboxFigure.classList.remove('swap', 'zoomed');
+  void lightboxFigure.offsetWidth;
+  lightboxFigure.classList.add('swap');
 }
+
+lightboxFav?.addEventListener('click', () => {
+  const photo = photos[activeIndex];
+  if (!photo) return;
+  const photoId = photo.path || photo.src;
+  if (favorites.has(photoId)) {
+    favorites.delete(photoId);
+    lightboxFav.classList.remove('active');
+  } else {
+    favorites.add(photoId);
+    lightboxFav.classList.add('active');
+  }
+  saveFavorites();
+  buildFilters();
+  renderGallery();
+});
+
+lightboxZoom?.addEventListener('click', () => {
+  lightboxFigure.classList.toggle('zoomed');
+});
 function moveLightbox(direction) {
   activeIndex = (activeIndex + direction + photos.length) % photos.length;
   updateLightbox();
@@ -333,23 +464,6 @@ document.addEventListener('mouseover', event => {
   cursorLabel.textContent = labeled ? labeled.dataset.cursor : '';
 });
 
-/* ── Corazones pixel que nacen al hacer clic ── */
-let flyingHearts = 0;
-function spawnHeart(x, y, bigBoost = false) {
-  if (flyingHearts > 16) return;
-  const heart = document.createElement('span');
-  heart.className = 'px-heart click-heart';
-  heart.style.left = `${x}px`;
-  heart.style.top = `${y}px`;
-  heart.style.setProperty('--s', `${13 + Math.random() * 11}px`);
-  heart.style.setProperty('--dx', `${Math.random() * 70 - 35}px`);
-  heart.style.setProperty('--rot', `${Math.random() * 30 - 15}deg`);
-  heart.style.setProperty('--c', ['#f0eee9', '#dcd8cc', '#ffffff'][Math.floor(Math.random() * 3)]);
-  document.body.append(heart);
-  flyingHearts++;
-  heart.addEventListener('animationend', () => { heart.remove(); flyingHearts--; });
-  if (bigBoost) heart.style.setProperty('--s', '26px');
-}
 addEventListener('pointerdown', event => {
   if (reduceMotion || lightbox.open) return;
   if (event.target.closest('a, button, label, input, .gallery-card')) return;
